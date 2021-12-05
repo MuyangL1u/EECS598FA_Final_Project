@@ -1,0 +1,47 @@
+Read Time:           0.00957
+Build Time:          0.00195
+Reading hyperparameters config file add-hyperparams-filename...
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01013
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01063
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01026
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00997
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00989
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01001
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00974
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01017
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00995
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01025
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00972
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00975
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00995
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01001
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01010
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00980
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01043
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01023
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01012
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.01048
+
+real	0m0.818s
+user	0m0.454s
+sys	0m0.270s

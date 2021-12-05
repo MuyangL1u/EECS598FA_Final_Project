@@ -17,4 +17,5 @@ fi
 # module load cuda
 export PATH=/usr/local/cuda-10.0/bin/:$PATH
 nvcc $1 -o $2 -std=c++11 #-lwb
+# nvcc .\TSP.cu -o TSP -lcurand
 echo "Successfully built $2"
