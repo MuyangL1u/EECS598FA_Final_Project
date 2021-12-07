@@ -1,0 +1,27 @@
+Read Time:           0.09531
+Build Time:          0.00199
+Reading hyperparameters config file add-hyperparams-filename...
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00879
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00862
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00825
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00825
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00825
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00825
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00826
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00824
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00825
+Computing random walk for 1405 nodes and 23540 edges.
+[TimingStat] Random walk time (s):                0.00824
+
+real	0m0.526s
+user	0m0.128s
+sys	0m0.218s

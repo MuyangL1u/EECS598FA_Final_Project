@@ -149,7 +149,7 @@ void compute_random_walk_call(
 	std::cout << "Computing random walk for " << g.num_nodes() << " nodes and " 
       	<< g.num_edges() << " edges." << std::endl;
 	
-	timer t;
+	Timer t;
 	t.Start();
 	for(int i = 0; i < num_walks_per_node/10; i++){
 		for(int w_n = 0; w_n < num_walks_per_node; ++w_n) {
