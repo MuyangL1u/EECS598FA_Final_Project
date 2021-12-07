@@ -41,29 +41,29 @@ double RandomNumberGenerator()
 }
 
 
-// void randomGenerator(double *dataHost, int number, unsigned long long seed)
+// void randomGenerator(double *random_output, int number, unsigned long long seed)
 // {   
-//     double *dataDev;
-//     cudaMalloc( (void **) &dataDev, number * sizeof(double) );
+//     double *rnumber;
+//     cudaMalloc( (void **) &rnumber, number * sizeof(double) );
  
 //     curandGenerator_t gen;
 //     curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
 //    	curandSetPseudoRandomGeneratorSeed(gen, seed);
-//     curandGenerateUniformDouble(gen, dataDev, number);
+//     curandGenerateUniformDouble(gen, rnumber, number);
 //     curandDestroyGenerator(gen);
  
-//     cudaMemcpy(dataHost, dataDev, number * sizeof(double), cudaMemcpyDeviceToHost);
-//     cudaFree(dataDev);
+//     cudaMemcpy(random_output, rnumber, number * sizeof(double), cudaMemcpyDeviceToHost);
+//     cudaFree(rnumber);
  
 //     return;
 // }
 
-#define BLOCK_SIZE 64
+#define BLOCK_SIZE 16
 #define TILE_WIDTH 16
 
 void __global__ device_random_walk_kernel(
 	int m_walk_length, int n_walks_per_node, 
-	int total_num_nodes, double *rnumber, 
+	int total_num_nodes, unsigned long long rnumber, 
 	int64_t * d_p_scan_list, int64_t * d_v_list, 
 	float * d_w_list, int64_t *d_global_walk, 
 	int64_t *d_outdegree);
@@ -121,6 +121,7 @@ void compute_random_walk_call(
 		}
 	}
 
+
 	cudaCheck(cudaMalloc((void**) &device_p_sum, (g.num_nodes() + 1) * sizeof(int64_t)));
 	cudaCheck(cudaMalloc((void**) &device_value, g.num_edges() * sizeof(int64_t)));
 	cudaCheck(cudaMalloc((void**) &device_weight, g.num_edges() * sizeof(float)));
@@ -135,22 +136,25 @@ void compute_random_walk_call(
 	dim3 dimGrid = ceil((float)g.num_nodes()/BLOCK_SIZE);
   	dim3 dimBlock = BLOCK_SIZE;
 
-	for (int i=0; i < (max_walk_length-1)*num_walks_per_node* g.num_nodes(); i++ ){
-	    host_r_list[i] =  RandomNumberGenerator();
-	}
 	
-	cudaCheck(cudaMalloc((void **)&device_r_list,sizeof(double)*(max_walk_length-1)*num_walks_per_node* g.num_nodes()));
-	cudaCheck(cudaMemcpy(device_r_list,host_r_list,sizeof(double)*num_walks_per_node*(max_walk_length-1)* g.num_nodes(),cudaMemcpyHostToDevice));
+	// for (int i=0; i < (max_walk_length-1)*num_walks_per_node* g.num_nodes(); i++ ){
+	//     host_r_list[i] =  RandomNumberGenerator();
+	// }
 	
+	// cudaCheck(cudaMalloc((void **)&device_r_list,sizeof(double)*(max_walk_length-1)*num_walks_per_node* g.num_nodes()));
+	// cudaCheck(cudaMemcpy(device_r_list,host_r_list,sizeof(double)*num_walks_per_node*(max_walk_length-1)* g.num_nodes(),cudaMemcpyHostToDevice));
+	
+	unsigned long long rnumber;
+
 	std::cout << "Computing random walk for " << g.num_nodes() << " nodes and " 
       	<< g.num_edges() << " edges." << std::endl;
-	Timer t;
+	
+	timer t;
 	t.Start();
-
 	for(int i = 0; i < num_walks_per_node/10; i++){
 		for(int w_n = 0; w_n < num_walks_per_node; ++w_n) {
-			// random_number = nerator();
-    		device_random_walk_kernel<<<dimGrid,dimBlock>>>(max_walk_length,num_walks_per_node,g.num_nodes(),device_r_list, 
+			rnumber = (unsigned long long)RandomNumberGenerator();
+    		device_random_walk_kernel<<<dimGrid,dimBlock>>>(max_walk_length,num_walks_per_node,g.num_nodes(),rnumber, 
     		device_p_sum, device_value, device_weight, device_walk, device_outdegree);
 			cudaDeviceSynchronize();
 		}
@@ -182,7 +186,7 @@ void compute_random_walk_call(
 
 void __global__ device_random_walk_kernel(
   int m_walk_length, int n_walks_per_node, 
-  int total_num_nodes,	double *rnumber, 
+  int total_num_nodes, unsigned long long rnumber, 
   int64_t * d_p_scan_list, int64_t * d_v_list, 
   float * d_w_list, int64_t *d_global_walk, 
   int64_t *d_outdegree){
@@ -253,48 +257,41 @@ void __global__ device_random_walk_kernel(
 			// 	if (remain != 0){
 			// 		for(w=0; w < remain; w++){
 			// 			if(d_w_list[d_p_scan_list[src_node+1] - w] > prev_time_stamp){
-			// 				exp_summs[0] += exp((float)(d_w_list[d_p_scan_list[src_node+1] - w]-prev_time_stamp)/time_boundary_diff);
-			// 			}
+			// 				exp_summs[0] += exp((float)(d_w_list[d_p_scan_list[src_node+1] - w]-prev_time_stamp)/time_boundary_diff);}
 			// 		}
 			// 		__syncthreads();
 			// 	}
 			// 	for(w = 0; w < distance / BLOCK_SIZE; w++){		
 			// 		if(d_w_list[d_p_scan_list[src_node] + w] > prev_time_stamp){
-			// 		  exp_summs[tid] += exp((float)(d_w_list[d_p_scan_list[src_node] + w*tid]-prev_time_stamp)/time_boundary_diff);
-			// 		}
+			// 		  exp_summs[tid] += exp((float)(d_w_list[d_p_scan_list[src_node] + w*tid]-prev_time_stamp)/time_boundary_diff);}
 			// 	}
 			// 	__syncthreads();
 			// }
 			// else {
 			// 	for(w=0; w < remain; w++){
 			// 		if(d_w_list[d_p_scan_list[src_node+1] - w] > prev_time_stamp){
-			// 			exp_summs[0] += exp((float)(d_w_list[d_p_scan_list[src_node+1] - w]-prev_time_stamp)/time_boundary_diff);
-			// 		}
+			// 			exp_summs[0] += exp((float)(d_w_list[d_p_scan_list[src_node+1] - w]-prev_time_stamp)/time_boundary_diff);}
 			// 	}
 			// 	__syncthreads();
 			// }
-			
 			// exp_summ = exp_summs[0];
 			// for(int m = 0; m< total_num_nodes/TILE_WIDTH; m++){
 			// 	int idx = m * TILE_WIDTH + i;
 			// 	if(i < TILE_WIDTH){
-			// 		cache[i] = d_w_list[idx];
-			// 	}
+			// 		cache[i] = d_w_list[idx];}
 			// 	__syncthreads();
 			// 	if( idx >= d_p_scan_list[src_node] && idx < d_p_scan_list[src_node+1]){
 			// 		for(int n=0; n < TILE_WIDTH; n++){
 			// 			if(cache[n] > prev_time_stamp){
-			// 				exp_summ += exp((float)(cache[n]-prev_time_stamp)/time_boundary_diff);
-			// 			}
-			// 		}	
-			// 		__syncthreads();
-			// 	}
+			// 				exp_summ += exp((float)(cache[n]-prev_time_stamp)/time_boundary_diff);}}	
+			// 		__syncthreads();}
 			// }
 				
 			
-			  double curCDF = 0, nextCDF = 0;
-			//   double random_number = rnumber;
-			  double random_number = rnumber[( w_n * (m_walk_length-1) * n_walks_per_node ) + (i * (m_walk_length-1) ) + walk_cnt];
+			double curCDF = 0, nextCDF = 0;
+			// double random_number = rnumber[( w_n * (m_walk_length-1) * n_walks_per_node ) + (i * (m_walk_length-1) ) + walk_cnt];
+			double random_number = rnumber * 1.0 / ULLONG_MAX;
+				rnumber = rnumber * (unsigned long long)25214903917 + 11;
 			bool fall_through = false;
 			  for(w = d_p_scan_list[src_node]; w < d_p_scan_list[src_node+1]; w++){		
 				if(d_w_list[w] > prev_time_stamp){
@@ -378,7 +375,7 @@ int main(int argc, char **argv) {
   
   
 	// Compute temporal random walk
-	for(int i=0; i<20; ++i) {
+	for(int i=0; i<10; ++i) {
   
 	  compute_random_walk_call(
 		/* temporal graph */ g, 
